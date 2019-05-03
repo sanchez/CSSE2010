@@ -208,6 +208,12 @@
     <Compile Include="src\serial.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\sseg.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\sseg.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\task.c">
       <SubType>compile</SubType>
     </Compile>
