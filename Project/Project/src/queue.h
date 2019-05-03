@@ -1,0 +1,24 @@
+#pragma once
+
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+
+typedef struct QueueItem {
+	void* data;
+	struct Queue* next;
+};
+
+typedef struct Q {
+	struct QueueItem* first;
+	struct QueueItem* current;
+	uint8_t size;
+};
+
+typedef struct Q* Queue;
+
+Queue queue_create();
+void queue_add(Queue q, void* d);
+uint8_t queue_size(Queue q);
+void queue_iterate(Queue q);
+void* queue_next(Queue q);

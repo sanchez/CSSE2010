@@ -196,16 +196,28 @@
     <Compile Include="src\defs.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\queue.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\queue.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\serial.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\serial.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="src\util.c">
+    <Compile Include="src\task.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="src\util.h">
+    <Compile Include="src\task.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\timer.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\timer.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\main.c">
