@@ -2,7 +2,7 @@
 
 int main (void)
 {
-	init_uart(115200);
+	init_uart(19200);
 	printf("Loading\n");
 	
 	while(1);
