@@ -4,15 +4,17 @@
 #include "sseg.h"
 #include "buzzer.h"
 #include "ledmatrix.h"
+#include "config.h"
 
 uint8_t counter = 0;
 void hello_world() {
-	printf("Hello\n");
 	sseg_set(counter++);
 }
 
 void secondary() {
 	buzzer_gameover();
+	ledmatrix_set_text_color(LEDMATRIX_COLOR_RED);
+	ledmatrix_scroll_text("Game over");
 }
 
 int main (void)
@@ -23,9 +25,9 @@ int main (void)
 	init_timers();
 	init_sseg();
 	init_buzzer();
+	init_config();
 	
-	ledmatrix_scroll_text("1234567890qwertyuiopasdfghjklzxcvbnm");
-	ledmatrix_set_pixel(5, 5, LEDMATRIX_COLOR_GREEN);
+	ledmatrix_scroll_text("Daniel Fitzmaurice 43961229");
 	
 	buzzer_startup();
 	

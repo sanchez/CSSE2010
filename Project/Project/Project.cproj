@@ -199,6 +199,12 @@
     <Compile Include="src\buzzer.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\config.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\config.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\defs.h">
       <SubType>compile</SubType>
     </Compile>

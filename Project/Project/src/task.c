@@ -24,6 +24,11 @@ void task_create(void (*f)(void), ITER_TYPE iterations, const char* name) {
 
 void task_run() {
 	uint32_t lastRun = ticks();
+	
+	for (uint8_t i = 0; i < tasksPos; i++) {
+		tasks[i]->lastIter = lastRun;
+	}
+	
 	while(1) {
 		
 		uint32_t currentTime = ticks();

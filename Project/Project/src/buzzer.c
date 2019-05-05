@@ -49,6 +49,8 @@ void buzzer_gameover() {
 
 uint32_t buzzerCounter = 0;
 void task_buzzer() {
+	if (!config_get(CONFIG_BUZZER_ENABLE)) return;
+	
 	if (playingPos >= BUZZER_MAX_TONES) return;
 	BuzzerValue* t = tones + playingPos;	
 	if (t->start == 0) {

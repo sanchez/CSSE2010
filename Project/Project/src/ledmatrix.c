@@ -36,6 +36,7 @@ const uint8_t LEDMATRIX_LETTER_6[] = {124, 146, 146, 77};
 const uint8_t LEDMATRIX_LETTER_7[] = {128, 158, 160, 193};
 const uint8_t LEDMATRIX_LETTER_8[] = {108, 146, 146, 109};
 const uint8_t LEDMATRIX_LETTER_9[] = {100, 146, 146, 125};
+const uint8_t LEDMATRIX_LETTER_SPACE[] = {0, 0, 1};
 
 const uint8_t* LEDMATRIX_LETTERS[] = { LEDMATRIX_LETTER_A, LEDMATRIX_LETTER_B, LEDMATRIX_LETTER_C, LEDMATRIX_LETTER_D, LEDMATRIX_LETTER_E, LEDMATRIX_LETTER_F, LEDMATRIX_LETTER_G, LEDMATRIX_LETTER_H, LEDMATRIX_LETTER_I, LEDMATRIX_LETTER_J, LEDMATRIX_LETTER_K, LEDMATRIX_LETTER_L, LEDMATRIX_LETTER_M, LEDMATRIX_LETTER_N, LEDMATRIX_LETTER_O, LEDMATRIX_LETTER_P, LEDMATRIX_LETTER_Q, LEDMATRIX_LETTER_R, LEDMATRIX_LETTER_S, LEDMATRIX_LETTER_T, LEDMATRIX_LETTER_U, LEDMATRIX_LETTER_V, LEDMATRIX_LETTER_W, LEDMATRIX_LETTER_X, LEDMATRIX_LETTER_Y, LEDMATRIX_LETTER_Z };
 const uint8_t* LEDMATRIX_NUMBERS[] = { LEDMATRIX_LETTER_0, LEDMATRIX_LETTER_1, LEDMATRIX_LETTER_2, LEDMATRIX_LETTER_3, LEDMATRIX_LETTER_4, LEDMATRIX_LETTER_5, LEDMATRIX_LETTER_6, LEDMATRIX_LETTER_7, LEDMATRIX_LETTER_8, LEDMATRIX_LETTER_9 };
@@ -92,6 +93,8 @@ void ledmatrix_scroll_text(char* text) {
 			vals = LEDMATRIX_LETTERS[c - 'A'];
 		} else if (c >= '0' && c <= '9') {
 			vals = LEDMATRIX_NUMBERS[c - '0'];
+		} else if (c == ' ') {
+			vals = LEDMATRIX_LETTER_SPACE;
 		} else {
 			vals = NULL;
 		}
@@ -112,6 +115,11 @@ void ledmatrix_clear() {
 	send_byte(LEDMATRIX_CMD_CLEAR_SCREEN);
 }
 
+uint8_t foregroundColor = LEDMATRIX_COLOR_GREEN;
+void ledmatrix_set_text_color(uint8_t c) {
+	foregroundColor = c;
+}
+
 void task_ledmatrix() {
 	if (pos != NULL) {
 		ledmatrix_shift_left();
@@ -119,7 +127,7 @@ void task_ledmatrix() {
 		uint8_t val = *pos;
 		for (uint8_t i = 0; i < LEDMATRIX_ROWS; i++) {
 			if (val & (1 << i)) {
-				columnData[i] = LEDMATRIX_COLOR_GREEN;
+				columnData[i] = foregroundColor;
 			} else {
 				columnData[i] = LEDMATRIX_COLOR_BLACK;
 			}

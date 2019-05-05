@@ -3,7 +3,7 @@
 #include <avr/io.h>
 #include <stdint.h>
 #include "timer.h"
-#include "queue.h"
+#include "config.h"
 
 typedef struct {
 	uint8_t tone;
