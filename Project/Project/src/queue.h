@@ -19,6 +19,7 @@ typedef struct Q* Queue;
 
 Queue queue_create();
 void queue_add(Queue q, void* d);
+void* queue_remove(Queue q);
 uint8_t queue_size(Queue q);
 void queue_iterate(Queue q);
 void* queue_next(Queue q);

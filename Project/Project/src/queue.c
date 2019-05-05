@@ -31,6 +31,17 @@ void queue_add(Queue q, void* d) {
 	q->size++;
 }
 
+void* queue_remove(Queue q) {
+	struct QueueItem* first = q->first;
+	
+	if (first == NULL) return NULL;
+	
+	q->first = first->next;
+	void* d = first->data;
+	free(first);
+	return d;
+}
+
 uint8_t queue_size(Queue q) {
 	return q->size;
 }

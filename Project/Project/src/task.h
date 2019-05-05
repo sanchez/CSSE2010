@@ -18,4 +18,5 @@ struct T {
 typedef struct T* Task;
 
 void task_create(void (*f)(void), ITER_TYPE iterations, const char* name);
+void task_create_ticks(void (*f)(void), ITER_TYPE iterations, const char* name);
 void task_run();

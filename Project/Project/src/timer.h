@@ -6,3 +6,5 @@
 
 void init_timers();
 uint32_t millis();
+uint32_t millis_to_ticks(uint32_t);
+uint32_t ticks();

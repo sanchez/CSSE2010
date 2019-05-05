@@ -6,7 +6,7 @@ uint8_t ssegVals[10] = {63,6,91,79,102,109,125,7,127,111};
 
 void init_sseg() {
 	DDRC = 0xff;
-	DDRA |= (1 << 2);
+	DDRA |= (1 << 1);
 }
 
 void sseg_set(uint8_t val) {
@@ -15,7 +15,7 @@ void sseg_set(uint8_t val) {
 
 void task_sseg() {
 	if (leftSide) {
-		PORTA |= (1 << 2);
+		PORTA |= (1 << 1);
 		uint8_t v = currentVal / 10;
 		if (v == 0) {
 			PORTC = 0;
@@ -26,7 +26,7 @@ void task_sseg() {
 		}
 		leftSide = 0;
 	} else {
-		PORTA &= ~(1 << 2);
+		PORTA &= ~(1 << 1);
 		uint8_t v = currentVal % 10;
 		PORTC = ssegVals[v];
 		leftSide = 1;

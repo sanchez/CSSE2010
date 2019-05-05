@@ -193,7 +193,19 @@
     <Folder Include="src\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\buzzer.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\buzzer.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\defs.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ledmatrix.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ledmatrix.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\queue.c">
