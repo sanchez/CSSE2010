@@ -6,14 +6,16 @@ uint8_t tasksPos;
 void task_create_ticks(void (*f)(void), ITER_TYPE iterations, const char* name) {
 	Task t = malloc(sizeof(struct T) * 1);
 	if (t == NULL) {
-		// TODO: Error handling here #1
+		ERROR("Memory Error");
 	}
 	
 	t->f = f;
 	t->iteration = iterations;
 	t->name = malloc(sizeof(char) * (strlen(name) + 1));
 	strcpy(t->name, name);
-	printf("Loaded task: %s\n", t->name);
+	char s[100];
+	sprintf(s, "Loaded Task: %s", t->name);
+	LOG(s);
 	
 	tasks[tasksPos++] = t;
 }
@@ -40,8 +42,9 @@ void task_run() {
 				t->lastIter = currentTime;
 				uint32_t after = ticks();
 				if ((after - before) >= millis_to_ticks(1)) {
-					// TODO: Warning about time here #1
-					printf("Task overtime: %s\n", t->name);
+					char s[100];
+					sprintf(s, "Task overtime: %s", t->name);
+					WARN(s);
 				}
 			}
 		}

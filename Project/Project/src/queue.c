@@ -3,14 +3,14 @@
 Queue queue_create() {	
 	Queue q = malloc(sizeof(struct Q) * 1);
 	if (q == NULL) {
-		// TODO: Some error handling here #1
+		ERROR("Memory Error");
 	}
 }
 
 void queue_add(Queue q, void* d) {
 	struct QueueItem* qi = malloc(sizeof(struct QueueItem) * 1);
 	if (qi == NULL) {
-		// TODO: Some error reporting here #1
+		ERROR("Memory Error");
 	}
 	
 	qi->data = d;

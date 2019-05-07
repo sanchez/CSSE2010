@@ -20,7 +20,7 @@ void secondary() {
 int main (void)
 {
 	init_uart(19200);
-	printf("Loading\n");
+	LOG("Loading");
 	init_ledmatrix();
 	init_timers();
 	init_sseg();
@@ -37,10 +37,7 @@ int main (void)
 	task_create(hello_world, 1000, "hello_world");
 	task_create(secondary, 5000, "secondary");
 	
-	LOG("Some Log");
-	WARN("Some Warning");
-	ERROR("MAssive Error");
+	LOG("Loaded");
 	
-	printf("Loaded\n");
 	task_run();
 }
