@@ -120,6 +120,24 @@ void ledmatrix_set_text_color(uint8_t c) {
 	foregroundColor = c;
 }
 
+LedMatrix ledmatrix_create() {
+	LedMatrix lm = malloc(sizeof(uint8_t*) * LEDMATRIX_COLUMNS);
+	if (lm == NULL) {
+		ERROR("Memory Error");
+	}
+	
+	for (uint8_t i = 0; i < LEDMATRIX_COLUMNS; i++) {
+		lm[i] = malloc(sizeof(uint8_t) * LEDMATRIX_ROWS);
+		if (lm[i] == NULL) {
+			ERROR("Memory Error");
+		}
+		
+		memset(lm + i, 0, sizeof(uint8_t) * LEDMATRIX_ROWS);
+	}
+	
+	return lm;
+}
+
 void task_ledmatrix() {
 	if (pos != NULL) {
 		ledmatrix_shift_left();

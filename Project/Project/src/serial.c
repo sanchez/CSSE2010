@@ -35,3 +35,15 @@ uint8_t uart_available() {
 		return 1;
 	}
 }
+
+void serial_set_color(uint8_t color) {
+	printf("\033[%dm", color);
+}
+
+void serial_bold() {
+	printf("\033[1m");
+}
+
+void serial_reset() {
+	printf("\033[0m");
+}

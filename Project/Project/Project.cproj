@@ -208,6 +208,12 @@
     <Compile Include="src\defs.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\error.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\error.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\ledmatrix.c">
       <SubType>compile</SubType>
     </Compile>
