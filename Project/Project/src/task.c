@@ -52,6 +52,14 @@ void task_run() {
 				}
 			}
 		}
-		lastRun = currentTime;
+		if (config_get(CONFIG_DEBUG_ENABLE)) {
+			uint32_t diff = ticks() - currentTime;
+			if (diff >= millis_to_ticks(2)) {
+				char s[100];
+				sprintf(s, "Behind (%d)", diff);
+				WARN(s);
+			}
+		}
+		lastRun = ticks();
 	}
 }

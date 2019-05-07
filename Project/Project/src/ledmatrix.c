@@ -181,7 +181,7 @@ uint8_t drawCounter = 0;
 void task_ledmatrix() {
 	drawCounter++;
 	if (pos != NULL) {
-		if (drawCounter % 10 == 0) {
+		if (drawCounter % 50 == 0) {
 			ledmatrix_shift_left();
 			uint8_t columnData[LEDMATRIX_ROWS];
 			uint8_t val = *pos;
