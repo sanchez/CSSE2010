@@ -214,6 +214,12 @@
     <Compile Include="src\error.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\joystick.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\joystick.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\ledmatrix.c">
       <SubType>compile</SubType>
     </Compile>
