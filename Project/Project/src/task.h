@@ -10,6 +10,8 @@
 #include "error.h"
 #include "config.h"
 
+#define TASK_MAX_TASKS 20
+
 struct T {
 	void (*f)(void);
 	ITER_TYPE iteration;

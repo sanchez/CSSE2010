@@ -1,9 +1,13 @@
 #include "task.h"
 
-Task tasks[20];
+Task tasks[TASK_MAX_TASKS];
 uint8_t tasksPos;
 
 void task_create_ticks(void (*f)(void), ITER_TYPE iterations, const char* name) {
+	if (tasksPos >= TASK_MAX_TASKS) {
+		ERROR("Max Tasks Exceeded");
+	}
+	
 	Task t = malloc(sizeof(struct T) * 1);
 	if (t == NULL) {
 		ERROR("Memory Error");
