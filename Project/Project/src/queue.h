@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "error.h"
 
 typedef struct QueueItem {
 	void* data;

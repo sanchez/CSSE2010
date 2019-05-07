@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "timer.h"
+#include "error.h"
+#include "config.h"
 
 struct T {
 	void (*f)(void);

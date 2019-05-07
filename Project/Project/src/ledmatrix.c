@@ -78,8 +78,17 @@ void ledmatrix_set_column(uint8_t x, uint8_t col[LEDMATRIX_ROWS]) {
 	}
 }
 
+void ledmatrix_set_row(uint8_t y, uint8_t row[LEDMATRIX_COLUMNS]) {
+	send_byte(LEDMATRIX_CMD_UPDATE_ROW);
+	send_byte(y & 0x07);
+	for (uint8_t i = 0; i < LEDMATRIX_COLUMNS; i++) {
+		send_byte(row[i]);
+	}
+}
+
 uint8_t charData[256];
 uint8_t* pos = NULL;
+uint8_t zeroCounter = 0;
 void ledmatrix_scroll_text(char* text) {
 	memset(charData, 0, sizeof(uint8_t) * 256);
 	uint8_t length = strlen(text);
@@ -109,6 +118,7 @@ void ledmatrix_scroll_text(char* text) {
 		}
 	}
 	pos = charData;
+	zeroCounter = 0;
 }
 
 void ledmatrix_clear() {
@@ -132,28 +142,71 @@ LedMatrix ledmatrix_create() {
 			ERROR("Memory Error");
 		}
 		
-		memset(lm + i, 0, sizeof(uint8_t) * LEDMATRIX_ROWS);
+		for (uint8_t j = 0; j < LEDMATRIX_ROWS; j++) {
+			lm[i][j] = 0;
+		}
 	}
-	
 	return lm;
 }
 
+void ledmatrix_set(LedMatrix display, uint8_t x, uint8_t y, uint8_t color) {
+	if (x >= LEDMATRIX_COLUMNS || y >= LEDMATRIX_ROWS) {
+		WARN("Attempt to reach out of bounds");
+		return;
+	}
+	
+	display[x][y] = color;
+}
+
+void ledmatrix_draw_line(LedMatrix display, uint8_t x) {
+	ledmatrix_set_column(x, display[x]);
+}
+
+void ledmatrix_draw(LedMatrix display) {
+	send_byte(LEDMATRIX_CMD_CLEAR_SCREEN);
+	send_byte(LEDMATRIX_CMD_UPDATE_ALL);
+	for (uint8_t y = 0; y < LEDMATRIX_ROWS; y++) {
+		for (uint8_t x = 0; x < LEDMATRIX_COLUMNS; x++) {
+			send_byte(display[x][y]);
+		}
+	}
+}
+
+LedMatrix activeDisplay = NULL;
+void ledmatrix_set_active(LedMatrix display) {
+	activeDisplay = display;
+}
+
+uint8_t drawCounter = 0;
 void task_ledmatrix() {
+	drawCounter++;
 	if (pos != NULL) {
-		ledmatrix_shift_left();
-		uint8_t columnData[LEDMATRIX_ROWS];
-		uint8_t val = *pos;
-		for (uint8_t i = 0; i < LEDMATRIX_ROWS; i++) {
-			if (val & (1 << i)) {
-				columnData[i] = foregroundColor;
-			} else {
-				columnData[i] = LEDMATRIX_COLOR_BLACK;
+		if (drawCounter % 10 == 0) {
+			ledmatrix_shift_left();
+			uint8_t columnData[LEDMATRIX_ROWS];
+			uint8_t val = *pos;
+			uint8_t c = 0;
+			for (uint8_t i = 0; i < LEDMATRIX_ROWS; i++) {
+				if (val & (1 << i)) {
+					columnData[i] = foregroundColor;
+					} else {
+					c++;
+					columnData[i] = LEDMATRIX_COLOR_BLACK;
+				}
+			}
+			if (c == LEDMATRIX_ROWS) {
+				zeroCounter++;
+				} else {
+				zeroCounter = 0;
+			}
+			ledmatrix_set_column(15, columnData);
+			pos += 1;
+			if ((pos - charData) >= 255 || zeroCounter == LEDMATRIX_COLUMNS) {
+				pos = NULL;
+				zeroCounter = 0;
 			}
 		}
-		ledmatrix_set_column(15, columnData);
-		pos += 1;
-		if ((pos - charData) >= 255) {
-			pos = NULL;
-		}
+	} else if(activeDisplay != NULL) {
+		ledmatrix_draw_line(activeDisplay, drawCounter % LEDMATRIX_COLUMNS);
 	}
 }

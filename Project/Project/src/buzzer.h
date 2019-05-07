@@ -14,4 +14,5 @@ typedef struct {
 void init_buzzer();
 void buzzer_startup();
 void buzzer_gameover();
+void buzzer_up();
 void task_buzzer();

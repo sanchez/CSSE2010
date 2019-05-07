@@ -47,6 +47,14 @@ void buzzer_gameover() {
 	buzzer_add_tone(10, 200);
 }
 
+void buzzer_up() {
+	addingPos = 0;
+	playingPos = 0;
+	buzzer_add_tone(1, 10);
+	buzzer_add_tone(2, 10);
+	buzzer_add_tone(3, 10);
+}
+
 uint32_t buzzerCounter = 0;
 void task_buzzer() {
 	if (!config_get(CONFIG_BUZZER_ENABLE)) return;

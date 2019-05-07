@@ -38,6 +38,7 @@ void ledmatrix_clear();
 
 LedMatrix ledmatrix_create();
 void ledmatrix_set(LedMatrix display, uint8_t x, uint8_t y, uint8_t color);
+void ledmatrix_set_active(LedMatrix display);
 void ledmatrix_draw(LedMatrix display);
 
 void task_ledmatrix();
