@@ -23,9 +23,11 @@ void uart_putchar(char c, FILE *stream) {
 	}
 }
 
-char uart_getchar(FILE *stream) {
-	while (!(UCSR0A & (1 << RXC0)));
-	return UDR0;
+int uart_getchar(FILE *stream) {
+	if (UCSR0A & (1 << RXC0)) {
+		return UDR0;
+	}
+	return EOF;
 }
 
 uint8_t uart_available() {

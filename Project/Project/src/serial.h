@@ -24,7 +24,7 @@
 
 void init_uart(unsigned long baudrate);
 void uart_putchar(char c, FILE *stream);
-char uart_getchar(FILE *stream);
+int uart_getchar(FILE *stream);
 uint8_t uart_available();
 
 void serial_set_color(uint8_t color);

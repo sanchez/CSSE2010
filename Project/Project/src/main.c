@@ -18,6 +18,13 @@ void secondary() {
 	ledmatrix_scroll_text("Game over");
 }
 
+void serial_in() {
+	int c = fgetc(stdin);
+	if (c != EOF) {
+		printf("%c", c);
+	}
+}
+
 uint8_t posX = 5;
 uint8_t posY = 5;
 void joysticks() {
@@ -75,9 +82,10 @@ int main (void)
 	task_create(task_ledmatrix, 1, "ledmatrix");
 	task_create(task_joystick, 25, "joystick");
 	task_create(hello_world, 1000, "hello_world");
-	task_create(secondary, 5000, "secondary");
+	// task_create(secondary, 5000, "secondary");
 	task_create(move, 150, "move");
 	task_create(joysticks, 100, "joysticks");
+	task_create(serial_in, 50, "serial_in");
 	
 	LOG("Loaded");
 	
