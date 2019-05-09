@@ -6,9 +6,9 @@ FILE uartInput = FDEV_SETUP_STREAM(NULL, uart_getchar, _FDEV_SETUP_READ);
 void init_uart(unsigned long baudrate) {
 	unsigned int baudPrescale = ((F_CPU / (8UL * baudrate)) + 1) / 2 - 1;
 	
-	UCSR0B |= (1 << RXEN0) | (1 << TXEN0);
-	//UCSR0C |= (1 << UCSZ00) | (1 << UCSZ01);
 	UBRR0 = baudPrescale;
+	UCSR0B |= (1 << RXEN0) | (1 << TXEN0);
+	UCSR0C |= (1 << UCSZ00) | (1 << UCSZ01);
 	
 	stdout = &uartOutput;
 	stdin = &uartInput;

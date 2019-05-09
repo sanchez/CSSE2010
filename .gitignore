@@ -2,3 +2,4 @@ Project/Project/Debug
 *.o
 *.elf
 *.hex
+.vscode/

@@ -55,7 +55,7 @@ void move() {
 
 int main (void)
 {
-	init_uart(19200);
+	init_uart(38400);
 	LOG("Loading");
 	init_ledmatrix();
 	init_timers();
