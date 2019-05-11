@@ -4,10 +4,11 @@
 #include <stdint.h>
 #include "timer.h"
 #include "config.h"
+#include "serial.h"
 
 typedef struct {
 	uint8_t tone;
-	uint8_t duration;
+	uint16_t duration;
 	uint32_t start;
 } BuzzerValue;
 

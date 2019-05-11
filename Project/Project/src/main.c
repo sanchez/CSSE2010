@@ -77,12 +77,12 @@ int main (void)
 	
 	buzzer_startup();
 	
-	task_create_ticks(task_buzzer, 1, "buzzer");
+	task_create(task_buzzer, 1, "buzzer");
 	task_create(task_sseg, 5, "sseg");
 	task_create(task_ledmatrix, 1, "ledmatrix");
 	task_create(task_joystick, 25, "joystick");
 	task_create(hello_world, 1000, "hello_world");
-	// task_create(secondary, 5000, "secondary");
+	//task_create(secondary, 5000, "secondary");
 	task_create(move, 150, "move");
 	task_create(joysticks, 100, "joysticks");
 	task_create(serial_in, 50, "serial_in");
