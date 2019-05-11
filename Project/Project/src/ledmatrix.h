@@ -34,6 +34,7 @@ void init_ledmatrix();
 void ledmatrix_set_pixel(uint8_t x, uint8_t y, uint8_t color);
 void ledmatrix_set_text_color(uint8_t color);
 void ledmatrix_scroll_text(char* text);
+void ledmatrix_stop_text();
 void ledmatrix_clear();
 
 LedMatrix ledmatrix_create();

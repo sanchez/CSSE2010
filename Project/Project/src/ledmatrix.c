@@ -177,6 +177,10 @@ void ledmatrix_set_active(LedMatrix display) {
 	activeDisplay = display;
 }
 
+void ledmatrix_stop_text() {
+	pos = NULL;
+}
+
 uint8_t drawCounter = 0;
 void task_ledmatrix() {
 	drawCounter++;
@@ -196,7 +200,7 @@ void task_ledmatrix() {
 			}
 			if (c == LEDMATRIX_ROWS) {
 				zeroCounter++;
-				} else {
+			} else {
 				zeroCounter = 0;
 			}
 			ledmatrix_set_column(15, columnData);

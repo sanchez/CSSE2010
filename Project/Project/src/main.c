@@ -6,6 +6,7 @@
 #include "ledmatrix.h"
 #include "config.h"
 #include "joystick.h"
+#include "buttons.h"
 
 uint8_t counter = 0;
 void hello_world() {
@@ -50,6 +51,31 @@ void joysticks() {
 	}
 }
 
+void buttons() {
+	if (buttons_get(BUTTON_ALL)) {
+		ledmatrix_stop_text();
+	}
+	
+	if (buttons_get(BUTTON_UP)) {
+		posY += 1;
+	}
+	if (buttons_get(BUTTON_DOWN)) {
+		posY -= 1;
+	}
+	
+	if (buttons_get(BUTTON_LEFT)) {
+		posX -= 1;
+	}
+	if (buttons_get(BUTTON_RIGHT)) {
+		posX += 1;
+	}
+	
+	if (posY < 1) posY = 1;
+	if (posY >= LEDMATRIX_COLUMNS) posY = LEDMATRIX_COLUMNS;
+	if (posX < 1) posX = 1;
+	if (posX >= LEDMATRIX_ROWS) posX = LEDMATRIX_ROWS;
+}
+
 uint8_t lastPosX = 5;
 uint8_t lastPosY = 5;
 LedMatrix game;
@@ -82,9 +108,10 @@ int main (void)
 	task_create(task_ledmatrix, 1, "ledmatrix");
 	task_create(task_joystick, 25, "joystick");
 	task_create(hello_world, 1000, "hello_world");
-	task_create(secondary, 5000, "secondary");
+	//task_create(secondary, 5000, "secondary");
 	task_create(move, 150, "move");
 	task_create(joysticks, 50, "joysticks");
+	task_create(buttons, 100, "buttons");
 	task_create(serial_in, 50, "serial_in");
 	
 	LOG("Loaded");

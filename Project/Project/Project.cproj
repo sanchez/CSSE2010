@@ -193,6 +193,12 @@
     <Folder Include="src\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\buttons.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\buttons.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\buzzer.c">
       <SubType>compile</SubType>
     </Compile>
