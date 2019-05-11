@@ -36,6 +36,7 @@ void task_run() {
 	}
 	
 	while(1) {
+		config_set(CONFIG_TASK_WARNING, 0);
 		
 		uint32_t currentTime = ticks();
 		for (uint8_t i = 0; i < tasksPos; i++) {
@@ -46,9 +47,12 @@ void task_run() {
 				t->lastIter = currentTime;
 				uint32_t after = ticks();
 				if ((after - before) >= millis_to_ticks(1) && config_get(CONFIG_DEBUG_ENABLE)) {
-					char s[100];
-					sprintf(s, "Task overtime: %s (%d ticks)", t->name, after - before);
-					WARN(s);
+					if (config_get(CONFIG_DEBUG_ENABLE)) {
+						char s[100];
+						sprintf(s, "Task overtime: %s (%d ticks)", t->name, after - before);
+						WARN(s);
+					}
+					config_set(CONFIG_TASK_WARNING, 1);
 				}
 			}
 		}
