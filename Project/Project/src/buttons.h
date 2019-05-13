@@ -10,3 +10,5 @@
 
 void init_buttons();
 uint8_t buttons_get(uint8_t b);
+uint8_t button_pressed(uint8_t b);
+void task_button();
