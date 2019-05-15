@@ -30,3 +30,5 @@ uint8_t uart_available();
 void serial_set_color(uint8_t color);
 void serial_bold();
 void serial_reset();
+void serial_clear();
+void serial_move(uint16_t x, uint16_t y);

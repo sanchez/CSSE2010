@@ -49,3 +49,11 @@ void serial_bold() {
 void serial_reset() {
 	printf("\033[0m");
 }
+
+void serial_clear() {
+	printf("\x1b[2J");
+}
+
+void serial_move(uint16_t x, uint16_t y) {
+	printf("\x1b[%d;%dH", y, x);
+}

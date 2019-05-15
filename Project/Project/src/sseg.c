@@ -11,6 +11,7 @@ void init_sseg() {
 
 void sseg_set(uint8_t val) {
 	currentVal = val;
+	if (currentVal > 99) currentVal = 99;
 }
 
 void task_sseg() {

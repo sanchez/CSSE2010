@@ -9,8 +9,8 @@
 #include "buttons.h"
 #include <stdlib.h>
 
-#define MAX_PROJECTILES 20
-#define MAX_ASTEROIDS 20
+#define MAX_PROJECTILES 10
+#define MAX_ASTEROIDS 10
 
 struct Position {
 	uint8_t alive;
@@ -19,6 +19,8 @@ struct Position {
 };
 
 LedMatrix game;
+uint8_t score;
+int8_t lives;
 uint8_t running = 0;
 uint8_t baseX = 2;
 struct Position projectiles[MAX_PROJECTILES];
@@ -42,7 +44,11 @@ uint8_t num_asteroids() {
 
 void create_asteroids();
 void draw_asteroids();
+void move();
 void init_game() {
+	score = 0;
+	lives = 4;
+	config_set(CONFIG_GAME_LIVES, lives);
 	for (uint8_t i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i].alive = 0;
 	}
@@ -56,9 +62,16 @@ void init_game() {
 		create_asteroids();
 		if (random() % 5 == 0) create_asteroids();
 	}
+	
+	for (uint8_t i = 0; i < LEDMATRIX_ROWS; i++) {
+		for (uint8_t j = 0; j < LEDMATRIX_COLUMNS; j++) {
+			ledmatrix_set(game, j, i, LEDMATRIX_COLOR_BLACK);
+		}
+	}
 }
 
 void fire_projectile() {
+	buzzer_up();
 	for (uint8_t i = 0; i < MAX_PROJECTILES; i++) {
 		if (projectiles[i].alive) {
 			if (projectiles[i].x == baseX && projectiles[i].y == (LEDMATRIX_COLUMNS - 2)) return;
@@ -131,18 +144,53 @@ void create_asteroids() {
 	ledmatrix_set(game, asteroids[pos].y, asteroids[pos].x, LEDMATRIX_COLOR_GREEN);
 }
 
+void check_collisions() {
+	for (uint8_t i = 0; i < MAX_ASTEROIDS; i++) {
+		struct Position ast = asteroids[i];
+		if (!ast.alive) continue;
+		
+		for (uint8_t j = 0; j < MAX_PROJECTILES; j++) {
+			struct Position proj = projectiles[j];
+			if (!proj.alive) continue;
+			
+			if (proj.x == ast.x && proj.y == ast.y) {
+				asteroids[i].alive = 0;
+				projectiles[j].alive = 0;
+				buzzer_collide();
+				score++;
+				ledmatrix_set(game, proj.y, proj.x, LEDMATRIX_COLOR_BLACK);
+				break;
+			}
+		}
+		
+		if (ast.y == (LEDMATRIX_COLUMNS - 1)) {
+			if (ast.x >= (baseX - 1) && ast.x <= (baseX + 1)) {
+				lives--;
+				asteroids[i].alive = 0;
+				buzzer_collide();
+				move();
+				continue;
+			}
+		}
+		
+		if (ast.y == (LEDMATRIX_COLUMNS - 2) && ast.x == baseX) {
+			lives--;
+			asteroids[i].alive = 0;
+			buzzer_collide();
+			move();
+		}
+	}
+}
+
 void update_game() {
 	if (!running) return;
 	draw_projectiles();
+	check_collisions();
 	draw_asteroids();
 	for (uint8_t i = 0; i < 1; i++) {
 		create_asteroids();
 	}
-}
-
-uint8_t counter = 0;
-void hello_world() {
-	sseg_set(counter++);
+	check_collisions();
 }
 
 void secondary() {
@@ -162,7 +210,13 @@ void serial_in() {
 		if (c == 'a') baseX -= 1;
 		else if (c == 'd') baseX += 1;
 		else if (c == 'w') fire_projectile();
-		else if (c == 's') running = !running;
+		else if (c == 's') {
+			if (lives <= 0) {
+				init_game();
+				buzzer_startup();
+			}
+			running = !running;
+		}
 		
 		bounds_ship();
 	}
@@ -179,6 +233,10 @@ void buttons() {
 		fire_projectile();
 	}
 	if (button_pressed(BUTTON_DOWN)) {
+		if (lives <= 0) {
+			init_game();
+			buzzer_startup();
+		}
 		running = !running;
 	}
 	
@@ -196,6 +254,8 @@ uint8_t lastShipX = 1;
 void move() {
 	if (lastShipX != baseX) {
 		buzzer_move();
+	}
+	if (1) {
 		draw_ship(lastShipX, LEDMATRIX_COLOR_BLACK);
 		if (num_projectiles() == MAX_PROJECTILES)
 			draw_ship(baseX, LEDMATRIX_COLOR_LIGHT_YELLOW);
@@ -205,9 +265,34 @@ void move() {
 	}
 }
 
+uint16_t lastScore = 100;
+int8_t lastLives = 10;
+void draw_score() {
+	if (lastScore != score) {
+		sseg_set(score);
+		serial_move(1, 1);
+		printf("Score: %4d\n", score);
+		lastScore = score;
+	}
+	if (lastLives != lives) {
+		if (lives >= 0) config_set(CONFIG_GAME_LIVES, lives);
+		else config_set(CONFIG_GAME_LIVES, 0);
+		serial_move(1, 2);
+		printf("Lives: %4d\n", lives);
+		lastLives = lives;
+		if (lives <= 0) {
+			running = 0;
+			buzzer_gameover();
+			ledmatrix_set_text_color(LEDMATRIX_COLOR_RED);
+			ledmatrix_scroll_text("Game Over");
+		}
+	}
+}
+
 int main (void)
 {
 	init_uart(38400);
+	serial_clear();
 	LOG("Loading");
 	init_ledmatrix();
 	init_timers();
@@ -229,12 +314,12 @@ int main (void)
 	task_create(task_ledmatrix, 1, "ledmatrix");
 	task_create(task_joystick, 25, "joystick");
 	task_create(task_button, 5, "button");
-	task_create(hello_world, 1000, "hello_world");
 	//task_create(secondary, 5000, "secondary");
 	task_create(move, 150, "move");
 	task_create(buttons, 100, "buttons");
 	task_create(serial_in, 50, "serial_in");
-	task_create(update_game, 500, "game");
+	task_create(update_game, 500, "_game");
+	task_create(draw_score, 500, "_score");
 	
 	LOG("Loaded");
 	

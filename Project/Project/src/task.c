@@ -46,7 +46,7 @@ void task_run() {
 				t->f();
 				t->lastIter = currentTime;
 				uint32_t after = ticks();
-				if ((after - before) >= millis_to_ticks(1) && config_get(CONFIG_DEBUG_ENABLE)) {
+				if ((after - before) >= millis_to_ticks(1) && config_get(CONFIG_DEBUG_ENABLE) && t->name[0] != '_') {
 					if (config_get(CONFIG_DEBUG_ENABLE)) {
 						char s[100];
 						sprintf(s, "Task overtime: %s (%d ticks)", t->name, after - before);

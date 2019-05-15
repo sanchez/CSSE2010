@@ -62,6 +62,14 @@ void buzzer_move() {
 	buzzer_add_tone(8, 100);
 }
 
+void buzzer_collide() {
+	addingPos = 0;
+	playingPos = 0;
+	buzzer_add_tone(15, 200);
+	buzzer_add_tone(20, 200);
+	buzzer_add_tone(25, 100);
+}
+
 uint16_t lastTone = 0;
 void task_buzzer() {
 	if (!config_get(CONFIG_BUZZER_ENABLE)) {

@@ -17,4 +17,5 @@ void buzzer_startup();
 void buzzer_gameover();
 void buzzer_up();
 void buzzer_move();
+void buzzer_collide();
 void task_buzzer();

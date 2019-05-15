@@ -1,16 +1,16 @@
 #include "config.h"
 
 void init_config() {
-	DDRA &= ~0xf0;
-	DDRD |= (1 << 2) | (1 << 3);
+	DDRA |= 0xf0;
+	DDRD &= ~((1 << 2) | (1 << 3));
 }
 
 uint8_t config_get(uint8_t c) {
 	switch (c) {
 		case CONFIG_BUZZER_ENABLE:
-			return !!(PINA & (1 << 7));
+			return !!(PIND & (1 << 3));
 		case CONFIG_DEBUG_ENABLE:
-			return !!(PINA & (1 << 4));
+			return !!(PIND & (1 << 2));
 		default: return 0;
 	}
 }
@@ -18,11 +18,11 @@ uint8_t config_get(uint8_t c) {
 void config_set(uint8_t c, uint8_t status) {
 	switch(c) {
 		case CONFIG_TASK_WARNING:
-			if (!!status) {
-				PORTD |= (1 << 3);
-			} else {
-				PORTD &= ~(1 << 3);
-			}
 			return;
+		case CONFIG_GAME_LIVES:
+			PORTA &= 0x0f;
+			for (uint8_t i = 0; i < status; i++) {
+				PORTA |= (1 << (i + 4));
+			}
 	}
 }

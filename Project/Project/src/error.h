@@ -3,6 +3,8 @@
 #include "serial.h"
 #include "config.h"
 
+#define ERROR_INITIAL_LINE 10
+#define ERROR_LOG_ROLLOVER 10
 #define ERROR(x) _error(__FILE__, __LINE__, x)
 #define WARN(x) _warn(__FILE__, __LINE__, x)
 #define LOG(x) _log(__FILE__, __LINE__, x)
