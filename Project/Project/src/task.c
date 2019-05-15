@@ -28,6 +28,10 @@ void task_create(void (*f)(void), ITER_TYPE iterations, const char* name) {
 	task_create_ticks(f, millis_to_ticks(iterations), name);
 }
 
+void task_change_time_ms(uint8_t pos, ITER_TYPE iterations) {
+	tasks[pos]->iteration = millis_to_ticks(iterations);
+}
+
 void task_run() {
 	uint32_t lastRun = ticks();
 	

@@ -23,6 +23,7 @@ uint8_t score;
 int8_t lives;
 uint8_t running = 0;
 uint8_t baseX = 2;
+uint16_t speed;
 struct Position projectiles[MAX_PROJECTILES];
 struct Position asteroids[MAX_ASTEROIDS];
 
@@ -48,7 +49,7 @@ void move();
 void init_game() {
 	score = 0;
 	lives = 4;
-	config_set(CONFIG_GAME_LIVES, lives);
+	speed = 500;
 	for (uint8_t i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i].alive = 0;
 	}
@@ -289,6 +290,14 @@ void draw_score() {
 	}
 }
 
+void increase_speed() {
+	if (!running) return;
+	
+	speed = 500 - (score * 5);
+	task_change_time_ms(0, speed);
+	task_change_time_ms(1, speed);
+}
+
 int main (void)
 {
 	init_uart(38400);
@@ -309,6 +318,8 @@ int main (void)
 	
 	buzzer_startup();
 	
+	task_create(update_game, 500, "_game");
+	task_create(draw_score, 500, "_score");
 	task_create(task_buzzer, 1, "buzzer");
 	task_create(task_sseg, 5, "sseg");
 	task_create(task_ledmatrix, 1, "ledmatrix");
@@ -318,8 +329,7 @@ int main (void)
 	task_create(move, 150, "move");
 	task_create(buttons, 100, "buttons");
 	task_create(serial_in, 50, "serial_in");
-	task_create(update_game, 500, "_game");
-	task_create(draw_score, 500, "_score");
+	task_create(increase_speed, 100, "speed");
 	
 	LOG("Loaded");
 	
