@@ -58,7 +58,7 @@ void init_game() {
 		asteroids[i].alive = 0;
 	}
 	
-	for (uint8_t i = 0; i < 10; i++) {
+	for (uint8_t i = 0; i < 7; i++) {
 		draw_asteroids();
 		create_asteroids();
 		if (random() % 5 == 0) create_asteroids();
@@ -194,12 +194,6 @@ void update_game() {
 	check_collisions();
 }
 
-void secondary() {
-	buzzer_gameover();
-	ledmatrix_set_text_color(LEDMATRIX_COLOR_RED);
-	ledmatrix_scroll_text("Game over");
-}
-
 inline void bounds_ship() {
 	if (baseX > 200) baseX = 0;
 	if (baseX > 7) baseX = 7;
@@ -208,40 +202,38 @@ inline void bounds_ship() {
 void serial_in() {
 	int c = fgetc(stdin);
 	if (c != EOF) {
-		if (c == 'a') baseX -= 1;
-		else if (c == 'd') baseX += 1;
-		else if (c == 'w') fire_projectile();
-		else if (c == 's') {
+		if (c == 'p') running = !running;
+		
+		if (running) {
 			if (lives <= 0) {
 				init_game();
 				buzzer_startup();
-			}
-			running = !running;
+				running = !running;
+			} else if (c == 'a') baseX -= 1;
+			else if (c == 'd') baseX += 1;
+			else if (c == 'w') fire_projectile();
+			bounds_ship();
 		}
-		
-		bounds_ship();
 	}
 }
 
 void buttons() {
-	if (button_pressed(BUTTON_LEFT)) {
-		baseX -= 1;
-	}
-	if (button_pressed(BUTTON_RIGHT)) {
-		baseX += 1;
-	}
-	if (button_pressed(BUTTON_UP)) {
-		fire_projectile();
-	}
-	if (button_pressed(BUTTON_DOWN)) {
+	uint8_t left = button_pressed(BUTTON_LEFT);
+	uint8_t right = button_pressed(BUTTON_RIGHT);
+	uint8_t middle = button_pressed(BUTTON_UP) || button_pressed(BUTTON_DOWN);
+	
+	if (!running && (left || right || middle)) {
 		if (lives <= 0) {
 			init_game();
 			buzzer_startup();
+			running = 1;
 		}
-		running = !running;
-	}
-	
-	bounds_ship();
+	} else if (running) {
+		if (left) baseX -= 1;
+		if (right) baseX += 1;
+		if (middle) fire_projectile();
+		bounds_ship();
+	}	
 }
 
 void draw_ship(uint8_t x, uint8_t color) {
@@ -298,6 +290,14 @@ void increase_speed() {
 	task_change_time_ms(1, speed);
 }
 
+uint8_t firstDelayRun = 0;
+void first_delay() {
+	if (firstDelayRun) return;
+	
+	firstDelayRun = 1;
+	running = 1;
+}
+
 int main (void)
 {
 	init_uart(38400);
@@ -330,6 +330,7 @@ int main (void)
 	task_create(buttons, 100, "buttons");
 	task_create(serial_in, 50, "serial_in");
 	task_create(increase_speed, 100, "speed");
+	task_create(first_delay, 9000, "run");
 	
 	LOG("Loaded");
 	
