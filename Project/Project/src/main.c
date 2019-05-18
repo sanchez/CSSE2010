@@ -18,6 +18,8 @@ struct Position {
 	uint8_t alive;
 	uint8_t x;
 	uint8_t y;
+	uint8_t counterIter;
+	uint8_t stepCount;
 };
 
 LedMatrix game;
@@ -123,13 +125,27 @@ void draw_projectiles() {
 void draw_asteroids() {
 	for (uint8_t i = 0; i < MAX_ASTEROIDS; i++) {
 		if (asteroids[i].alive) {
-			ledmatrix_set(game, asteroids[i].y, asteroids[i].x, LEDMATRIX_COLOR_BLACK);
-			asteroids[i].y++;
-			if (asteroids[i].y >= LEDMATRIX_COLUMNS) {
-				asteroids[i].alive = 0;
-				continue;
+			asteroids[i].stepCount++;
+			if (asteroids[i].stepCount >= asteroids[i].counterIter) {
+				asteroids[i].stepCount = 0;
+				ledmatrix_set(game, asteroids[i].y, asteroids[i].x, LEDMATRIX_COLOR_BLACK);
+				
+				uint8_t speedInfront = asteroids[i].counterIter;
+				for (uint8_t j = 0; j < MAX_ASTEROIDS; j++) {
+					if (!asteroids[j].alive) continue;
+					if (asteroids[j].x == asteroids[i].x && asteroids[j].y == (asteroids[i].y + 2)) {
+						speedInfront = asteroids[j].counterIter;
+					}
+				}
+				asteroids[i].counterIter = speedInfront;
+				
+				asteroids[i].y++;
+				if (asteroids[i].y >= LEDMATRIX_COLUMNS) {
+					asteroids[i].alive = 0;
+					continue;
+				}
+				ledmatrix_set(game, asteroids[i].y, asteroids[i].x, LEDMATRIX_COLOR_GREEN);
 			}
-			ledmatrix_set(game, asteroids[i].y, asteroids[i].x, LEDMATRIX_COLOR_GREEN);
 		}
 	}
 }
@@ -147,7 +163,9 @@ void create_asteroids() {
 	
 	if (pos == MAX_ASTEROIDS) return;
 	
+	uint8_t cycles = 0;
 	do {
+		cycles++;
 		x = random() % LEDMATRIX_ROWS;
 		exists = 0;
 		for (uint8_t i = 0; i < MAX_ASTEROIDS; i++) {
@@ -157,11 +175,15 @@ void create_asteroids() {
 				}
 			}
 		}
-	} while (exists == 1);
+	} while (exists == 1 && cycles < 10);
+	
+	if (cycles >= 10) return;
 	
 	asteroids[pos].alive = 1;
 	asteroids[pos].x = x;
 	asteroids[pos].y = 0;
+	asteroids[pos].counterIter = (random() % 10) + 1;
+	asteroids[pos].stepCount = 0;
 	ledmatrix_set(game, asteroids[pos].y, asteroids[pos].x, LEDMATRIX_COLOR_GREEN);
 }
 
@@ -331,9 +353,13 @@ void draw_score() {
 void increase_speed() {
 	if (!running) return;
 	
-	speed = 500 - (score * 5);
+	uint8_t s = score;
+	if (s >= 20) s = 19;
+	
+	speed = 100 - s;
 	task_change_time_ms(0, speed);
 	task_change_time_ms(1, speed);
+	task_change_time_ms(2, speed);
 }
 
 uint8_t firstDelayRun = 0;
@@ -364,7 +390,7 @@ int main (void)
 	
 	buzzer_startup();
 	
-	task_create(update_game_asteroids, 500, "ast");
+	task_create(update_game_asteroids, 100, "ast");
 	task_create(update_game_projectiles, 500, "proj");
 	task_create(draw_score, 500, "_score");
 	task_create(task_buzzer, 1, "buzzer");
