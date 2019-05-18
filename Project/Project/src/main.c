@@ -1,3 +1,4 @@
+#include "defs.h"
 #include "serial.h"
 #include "task.h"
 #include "timer.h"
@@ -8,6 +9,7 @@
 #include "joystick.h"
 #include "buttons.h"
 #include <stdlib.h>
+#include <util/delay.h>
 
 #define MAX_PROJECTILES 10
 #define MAX_ASTEROIDS 10
@@ -224,7 +226,17 @@ inline void bounds_ship() {
 void serial_in() {
 	int c = fgetc(stdin);
 	if (c != EOF) {
-		if (c == 'p') running = !running;
+		if (c == 'p') {
+			int pauseC;
+			cli();
+			do {
+				pauseC = fgetc(stdin);
+				task_sseg();
+				_delay_ms(5);
+			} while (pauseC != 'p');
+			sei();
+			//running = !running;
+		}
 		
 		if (running) {
 			if (lives <= 0) {
@@ -352,7 +364,7 @@ int main (void)
 	
 	buzzer_startup();
 	
-	task_create(update_game_asteroids, 500, "game");
+	task_create(update_game_asteroids, 500, "ast");
 	task_create(update_game_projectiles, 500, "proj");
 	task_create(draw_score, 500, "_score");
 	task_create(task_buzzer, 1, "buzzer");
