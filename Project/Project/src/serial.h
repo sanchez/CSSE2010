@@ -25,10 +25,10 @@
 void init_uart(unsigned long baudrate);
 void uart_putchar(char c, FILE *stream);
 int uart_getchar(FILE *stream);
-uint8_t uart_available();
+uint8_t uart_available(void);
 
 void serial_set_color(uint8_t color);
-void serial_bold();
-void serial_reset();
-void serial_clear();
+void serial_bold(void);
+void serial_reset(void);
+void serial_clear(void);
 void serial_move(uint16_t x, uint16_t y);

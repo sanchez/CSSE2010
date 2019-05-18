@@ -12,10 +12,10 @@ typedef struct {
 	uint32_t start;
 } BuzzerValue;
 
-void init_buzzer();
-void buzzer_startup();
-void buzzer_gameover();
-void buzzer_up();
-void buzzer_move();
-void buzzer_collide();
-void task_buzzer();
+void init_buzzer(void);
+void buzzer_startup(void);
+void buzzer_gameover(void);
+void buzzer_up(void);
+void buzzer_move(void);
+void buzzer_collide(void);
+void task_buzzer(void);

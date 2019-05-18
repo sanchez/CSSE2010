@@ -30,16 +30,16 @@
 // [column][row]
 typedef uint8_t** LedMatrix;
 
-void init_ledmatrix();
+void init_ledmatrix(void);
 void ledmatrix_set_pixel(uint8_t x, uint8_t y, uint8_t color);
 void ledmatrix_set_text_color(uint8_t color);
 void ledmatrix_scroll_text(char* text);
-void ledmatrix_stop_text();
-void ledmatrix_clear();
+void ledmatrix_stop_text(void);
+void ledmatrix_clear(void);
 
-LedMatrix ledmatrix_create();
+LedMatrix ledmatrix_create(void);
 void ledmatrix_set(LedMatrix display, uint8_t x, uint8_t y, uint8_t color);
 void ledmatrix_set_active(LedMatrix display);
 void ledmatrix_draw(LedMatrix display);
 
-void task_ledmatrix();
+void task_ledmatrix(void);

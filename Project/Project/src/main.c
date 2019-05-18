@@ -27,25 +27,27 @@ uint16_t speed;
 struct Position projectiles[MAX_PROJECTILES];
 struct Position asteroids[MAX_ASTEROIDS];
 
-uint8_t num_projectiles() {
-	uint8_t count = 0;
-	for (uint8_t i = 0; i < MAX_PROJECTILES; i++) {
-		if (projectiles[i].alive) count++;
-	}
-	return count;
-}
+void create_asteroids(void);
+void draw_asteroids(void);
+void move(void);
+uint8_t num_projectiles(void);
+uint8_t num_asteroids(void);
+void init_game(void);
+void fire_projectile(void);
+void draw_projectiles(void);
+void check_collisions(void);
+void update_game_asteroids(void);
+void update_game_projectiles(void);
+inline void bounds_ship(void);
+void serial_in(void);
+void buttons(void);
+void joystick(void);
+void draw_ship(uint8_t x, uint8_t color);
+void move(void);
+void draw_score(void);
+void increase_speed(void);
+void first_delay(void);
 
-uint8_t num_asteroids() {
-	uint8_t count = 0;
-	for(uint8_t i = 0; i < MAX_ASTEROIDS; i++) {
-		if (asteroids[i].alive) count++;
-	}
-	return count;
-}
-
-void create_asteroids();
-void draw_asteroids();
-void move();
 void init_game() {
 	score = 0;
 	lives = 4;
@@ -69,6 +71,22 @@ void init_game() {
 			ledmatrix_set(game, j, i, LEDMATRIX_COLOR_BLACK);
 		}
 	}
+}
+
+uint8_t num_projectiles() {
+	uint8_t count = 0;
+	for (uint8_t i = 0; i < MAX_PROJECTILES; i++) {
+		if (projectiles[i].alive) count++;
+	}
+	return count;
+}
+
+uint8_t num_asteroids() {
+	uint8_t count = 0;
+	for(uint8_t i = 0; i < MAX_ASTEROIDS; i++) {
+		if (asteroids[i].alive) count++;
+	}
+	return count;
 }
 
 void fire_projectile() {
@@ -183,12 +201,16 @@ void check_collisions() {
 	}
 }
 
-void update_game() {
+void update_game_projectiles() {
 	if (!running) return;
 	draw_projectiles();
 	check_collisions();
+}
+
+void update_game_asteroids() {
+	if (!running) return;
 	draw_asteroids();
-	for (uint8_t i = 0; i < 1; i++) {
+	for (uint8_t i = 0; i < 2; i++) {
 		create_asteroids();
 	}
 	check_collisions();
@@ -234,6 +256,18 @@ void buttons() {
 		if (middle) fire_projectile();
 		bounds_ship();
 	}	
+}
+
+void joystick() {
+	uint8_t x = joystick_read(JOYSTICK_X);
+	uint8_t y = joystick_read(JOYSTICK_Y);
+	if (running) {
+		if (x <= 85) baseX -= 1;
+		if (x >= 170) baseX += 1;
+		if (y <= 85) fire_projectile();
+		if (y >= 170) fire_projectile();
+	}
+	bounds_ship();
 }
 
 void draw_ship(uint8_t x, uint8_t color) {
@@ -318,7 +352,8 @@ int main (void)
 	
 	buzzer_startup();
 	
-	task_create(update_game, 500, "_game");
+	task_create(update_game_asteroids, 500, "game");
+	task_create(update_game_projectiles, 500, "proj");
 	task_create(draw_score, 500, "_score");
 	task_create(task_buzzer, 1, "buzzer");
 	task_create(task_sseg, 5, "sseg");
@@ -330,6 +365,7 @@ int main (void)
 	task_create(buttons, 100, "buttons");
 	task_create(serial_in, 50, "serial_in");
 	task_create(increase_speed, 100, "speed");
+	task_create(joystick, 200, "jmove");
 	task_create(first_delay, 9000, "run");
 	
 	LOG("Loaded");

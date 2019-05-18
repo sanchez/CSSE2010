@@ -2,6 +2,8 @@
 
 #define BUZZER_MAX_TONES 10
 
+void buzzer_add_tone(uint8_t t, uint16_t duration);
+
 BuzzerValue tones[BUZZER_MAX_TONES];
 uint8_t addingPos = 0;
 uint8_t playingPos = 0;

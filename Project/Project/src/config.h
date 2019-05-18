@@ -7,6 +7,6 @@
 #define CONFIG_TASK_WARNING 3
 #define CONFIG_GAME_LIVES 4
 
-void init_config();
+void init_config(void);
 uint8_t config_get(uint8_t c);
 void config_set(uint8_t c, uint8_t status);

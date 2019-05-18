@@ -7,6 +7,6 @@
 #define JOYSTICK_X 3
 #define JOYSTICK_Y 2
 
-void init_joystick();
+void init_joystick(void);
 uint8_t joystick_read(uint8_t direction);
-void task_joystick();
+void task_joystick(void);

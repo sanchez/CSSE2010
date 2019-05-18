@@ -53,7 +53,7 @@ void task_run() {
 				if ((after - before) >= millis_to_ticks(1) && config_get(CONFIG_DEBUG_ENABLE) && t->name[0] != '_') {
 					if (config_get(CONFIG_DEBUG_ENABLE)) {
 						char s[100];
-						sprintf(s, "Task overtime: %s (%d ticks)", t->name, after - before);
+						sprintf(s, "Task overtime: %s (%ld ticks)", t->name, after - before);
 						WARN(s);
 					}
 					config_set(CONFIG_TASK_WARNING, 1);
@@ -64,7 +64,7 @@ void task_run() {
 			uint32_t diff = ticks() - currentTime;
 			if (diff >= millis_to_ticks(2)) {
 				char s[100];
-				sprintf(s, "Behind (%d)", diff);
+				sprintf(s, "Behind (%ld)", diff);
 				WARN(s);
 			}
 		}
