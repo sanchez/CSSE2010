@@ -164,6 +164,15 @@ void ledmatrix_set(LedMatrix display, uint8_t x, uint8_t y, uint8_t color) {
 	display[x][y] = color;
 }
 
+uint8_t ledmatrix_get(LedMatrix display, uint8_t x, uint8_t y) {
+	if (x >= LEDMATRIX_COLUMNS || y >= LEDMATRIX_ROWS) {
+		WARN("Attempt to reach out of bounds");
+		return LEDMATRIX_COLOR_BLACK;
+	}
+	
+	return display[x][y];
+}
+
 void ledmatrix_draw_line(LedMatrix display, uint8_t x) {
 	ledmatrix_set_column(x, display[x]);
 }

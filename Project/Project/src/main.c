@@ -13,6 +13,7 @@
 
 #define MAX_PROJECTILES 10
 #define MAX_ASTEROIDS 10
+#define MAX_ANIMATIONS 10
 
 struct Position {
 	uint8_t alive;
@@ -30,6 +31,7 @@ uint8_t baseX = 2;
 uint16_t speed;
 struct Position projectiles[MAX_PROJECTILES];
 struct Position asteroids[MAX_ASTEROIDS];
+struct Position animations[MAX_ANIMATIONS];
 
 void create_asteroids(void);
 void draw_asteroids(void);
@@ -114,7 +116,9 @@ void fire_projectile() {
 void draw_projectiles() {
 	for (uint8_t i = 0; i < MAX_PROJECTILES; i++) {
 		if (projectiles[i].alive) {
-			if (projectiles[i].y < LEDMATRIX_COLUMNS - 2) ledmatrix_set(game, projectiles[i].y, projectiles[i].x, LEDMATRIX_COLOR_BLACK);
+			if (projectiles[i].y < LEDMATRIX_COLUMNS - 2 && ledmatrix_get(game, projectiles[i].y, projectiles[i].x) == LEDMATRIX_COLOR_RED) {
+				ledmatrix_set(game, projectiles[i].y, projectiles[i].x, LEDMATRIX_COLOR_BLACK);
+			}
 			projectiles[i].y--;
 			if (projectiles[i].y > LEDMATRIX_COLUMNS) {
 				projectiles[i].alive = 0;
@@ -128,10 +132,16 @@ void draw_projectiles() {
 void draw_asteroids() {
 	for (uint8_t i = 0; i < MAX_ASTEROIDS; i++) {
 		if (asteroids[i].alive) {
+			if (ledmatrix_get(game, asteroids[i].y, asteroids[i].x) == LEDMATRIX_COLOR_GREEN)
+				ledmatrix_set(game, asteroids[i].y, asteroids[i].x, LEDMATRIX_COLOR_BLACK);
+		}
+	}
+	for (uint8_t i = 0; i < MAX_ASTEROIDS; i++) {
+		if (asteroids[i].alive) {
 			asteroids[i].stepCount++;
 			if (asteroids[i].stepCount >= asteroids[i].counterIter) {
 				asteroids[i].stepCount = 0;
-				ledmatrix_set(game, asteroids[i].y, asteroids[i].x, LEDMATRIX_COLOR_BLACK);
+				// ledmatrix_set(game, asteroids[i].y, asteroids[i].x, LEDMATRIX_COLOR_BLACK);
 				
 				uint8_t speedInfront = asteroids[i].counterIter;
 				for (uint8_t j = 0; j < MAX_ASTEROIDS; j++) {
@@ -147,8 +157,13 @@ void draw_asteroids() {
 					asteroids[i].alive = 0;
 					continue;
 				}
-				ledmatrix_set(game, asteroids[i].y, asteroids[i].x, LEDMATRIX_COLOR_GREEN);
+				//ledmatrix_set(game, asteroids[i].y, asteroids[i].x, LEDMATRIX_COLOR_GREEN);
 			}
+		}
+	}
+	for (uint8_t i = 0; i < MAX_ASTEROIDS; i++) {
+		if (asteroids[i].alive) {
+			ledmatrix_set(game, asteroids[i].y, asteroids[i].x, LEDMATRIX_COLOR_GREEN);
 		}
 	}
 }
