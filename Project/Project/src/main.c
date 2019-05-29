@@ -13,7 +13,10 @@
 
 #define MAX_PROJECTILES 10
 #define MAX_ASTEROIDS 10
-#define MAX_ANIMATIONS 10
+#define MAX_ANIMATIONS 3
+
+#define ANIMATION_TYPE_ASTEROID 1
+#define ANIMATION_TYPE_BASE 2
 
 struct Position {
 	uint8_t alive;
@@ -21,6 +24,14 @@ struct Position {
 	uint8_t y;
 	uint8_t counterIter;
 	uint8_t stepCount;
+};
+
+struct Animation {
+	uint8_t alive;
+	uint8_t x;
+	uint8_t y;
+	uint8_t type;
+	uint8_t step;
 };
 
 LedMatrix game;
@@ -31,7 +42,7 @@ uint8_t baseX = 2;
 uint16_t speed;
 struct Position projectiles[MAX_PROJECTILES];
 struct Position asteroids[MAX_ASTEROIDS];
-struct Position animations[MAX_ANIMATIONS];
+struct Animation animations[MAX_ANIMATIONS];
 
 void create_asteroids(void);
 void draw_asteroids(void);
@@ -64,6 +75,10 @@ void init_game() {
 	
 	for (uint8_t i = 0; i < MAX_ASTEROIDS; i++) {
 		asteroids[i].alive = 0;
+	}
+	
+	for (uint8_t i = 0; i < MAX_ANIMATIONS; i++) {
+		animations[i].alive = 0;
 	}
 	
 	for (uint8_t i = 0; i < LEDMATRIX_ROWS; i++) {
@@ -110,6 +125,97 @@ void fire_projectile() {
 		projectiles[i].x = baseX;
 		projectiles[i].y = LEDMATRIX_COLUMNS - 2;
 		return;
+	}
+}
+
+void create_animation(uint8_t x, uint8_t y, uint8_t type) {
+	for (uint8_t i = 0; i < MAX_ANIMATIONS; i++) {
+		if (animations[i].alive) continue;
+		
+		animations[i].alive = 1;
+		animations[i].x = x;
+		animations[i].y = y;
+		animations[i].step = 0;
+		animations[i].type = type;
+		return;
+	}
+}
+
+void draw_animations() {
+	for (uint8_t i = 0; i < MAX_ANIMATIONS; i++) {
+		if (animations[i].alive) {
+			uint8_t minX = animations[i].x - 1;
+			if (animations[i].x == 0) minX = 0;
+			uint8_t maxX = animations[i].x + 1;
+			if (animations[i].x == LEDMATRIX_ROWS - 1) maxX = LEDMATRIX_ROWS - 1;
+			
+			uint8_t minY = animations[i].y - 1;
+			if (animations[i].y == 0) minY = 0;
+			uint8_t maxY = animations[i].y + 1;
+			if (animations[i].y == LEDMATRIX_COLUMNS - 1) maxY = LEDMATRIX_COLUMNS - 1;
+			
+			for (uint8_t j = minX; j <= maxX; j++) {
+				for (uint8_t k = minY; k <= maxY; k++) {
+					if (ledmatrix_get(game, k, j) == LEDMATRIX_COLOR_ORANGE) {
+						ledmatrix_set(game, k, j, LEDMATRIX_COLOR_BLACK);
+					}
+				}
+			}
+		}
+	}
+	for (uint8_t i = 0; i < MAX_ANIMATIONS; i++) {
+		if (!animations[i].alive) continue;
+		
+		if (animations[i].step >= 8) {
+			animations[i].alive = 0;
+			continue;
+		}
+		
+		if (animations[i].type == ANIMATION_TYPE_ASTEROID) {
+			uint8_t x = animations[i].x;
+			uint8_t y = animations[i].y;
+			switch (animations[i].step) {
+				case 0:
+					ledmatrix_set(game, y, x, LEDMATRIX_COLOR_ORANGE);
+					break;
+				case 1:
+					ledmatrix_set(game, y+1, x+1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y+1, x-1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y-1, x+1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y-1, x-1, LEDMATRIX_COLOR_ORANGE);
+					break;
+				case 2:
+					ledmatrix_set(game, y+1, x, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y-1, x, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y, x+1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y, x-1, LEDMATRIX_COLOR_ORANGE);
+					break;
+				case 3:
+					ledmatrix_set(game, y, x, LEDMATRIX_COLOR_ORANGE);
+					break;
+				case 4:
+					ledmatrix_set(game, y+1, x+1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y+1, x-1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y-1, x+1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y-1, x-1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y+1, x, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y-1, x, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y, x+1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y, x-1, LEDMATRIX_COLOR_ORANGE);
+					break;
+				case 5:
+					ledmatrix_set(game, y+1, x+1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y+1, x-1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y-1, x+1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y-1, x-1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y+1, x, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y-1, x, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y, x+1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y, x-1, LEDMATRIX_COLOR_ORANGE);
+					ledmatrix_set(game, y, x, LEDMATRIX_COLOR_ORANGE);
+			}
+		}
+		animations[i].step++;
 	}
 }
 
@@ -220,6 +326,7 @@ void check_collisions() {
 				buzzer_collide();
 				score++;
 				ledmatrix_set(game, proj.y, proj.x, LEDMATRIX_COLOR_BLACK);
+				create_animation(proj.x, proj.y, ANIMATION_TYPE_ASTEROID);
 				break;
 			}
 		}
@@ -256,6 +363,11 @@ void update_game_asteroids() {
 		create_asteroids();
 	}
 	check_collisions();
+}
+
+void update_game_animations() {
+	if (!running) return;
+	draw_animations();
 }
 
 inline void bounds_ship() {
@@ -424,8 +536,9 @@ int main (void)
 	
 	buzzer_startup();
 	
-	task_create(update_game_asteroids, 100, "ast");
+	task_create(update_game_asteroids, 100, "_ast");
 	task_create(update_game_projectiles, 500, "proj");
+	task_create(update_game_animations, 250, "anim");
 	task_create(draw_score, 500, "_score");
 	task_create(task_buzzer, 1, "buzzer");
 	task_create(task_sseg, 5, "sseg");
