@@ -33,7 +33,7 @@ uint8_t button_pressed(uint8_t b) {
 void task_button() {
 	for (uint8_t i = BUTTON_RIGHT; i <= BUTTON_LEFT; i++) {
 		uint8_t down = buttons_get(i);
-		if (buttonDown[i] && !down) {
+		if (!buttonDown[i] && down) {
 			buttonPressed[i] = 1;
 		}
 		buttonDown[i] = down;
