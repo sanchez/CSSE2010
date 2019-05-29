@@ -64,17 +64,20 @@ void init_game() {
 		asteroids[i].alive = 0;
 	}
 	
+	for (uint8_t i = 0; i < LEDMATRIX_ROWS; i++) {
+		for (uint8_t j = 0; j < LEDMATRIX_COLUMNS; j++) {
+			ledmatrix_set(game, j, i, LEDMATRIX_COLOR_BLACK);
+		}
+	}
+	
 	for (uint8_t i = 0; i < 7; i++) {
 		draw_asteroids();
 		create_asteroids();
 		if (random() % 5 == 0) create_asteroids();
 	}
 	
-	for (uint8_t i = 0; i < LEDMATRIX_ROWS; i++) {
-		for (uint8_t j = 0; j < LEDMATRIX_COLUMNS; j++) {
-			ledmatrix_set(game, j, i, LEDMATRIX_COLOR_BLACK);
-		}
-	}
+	serial_move(1, 1);
+	printf("Daniel Fitzmaurice (43961229)\n");
 }
 
 uint8_t num_projectiles() {
@@ -245,17 +248,25 @@ inline void bounds_ship() {
 	if (baseX > 7) baseX = 7;
 }
 
+uint8_t lastCharESC = 0;
+uint8_t row = 5;
 void serial_in() {
 	int c = fgetc(stdin);
 	if (c != EOF) {
-		if (c == 'p') {
+		if (c == 91) {
+			lastCharESC = 1;
+			return;
+		}
+		
+		if (c == 'p' || c == 'P') {
 			int pauseC;
 			cli();
+			buzzer_pause();
 			do {
 				pauseC = fgetc(stdin);
 				task_sseg();
 				_delay_ms(5);
-			} while (pauseC != 'p');
+			} while (pauseC != 'p' && pauseC != 'P');
 			sei();
 			//running = !running;
 		}
@@ -266,10 +277,18 @@ void serial_in() {
 				buzzer_startup();
 				running = !running;
 			} else if (c == 'a') baseX -= 1;
+			else if (c == 'l' || c == 'L') baseX -= 1;
+			else if (lastCharESC == 1 && c == 68) baseX -= 1;
 			else if (c == 'd') baseX += 1;
+			else if (c == 'r' || c == 'R') baseX += 1;
+			else if (lastCharESC == 1 && c == 67) baseX += 1;
 			else if (c == 'w') fire_projectile();
+			else if (c == ' ') fire_projectile();
+			else if (lastCharESC == 1 && c == 65) fire_projectile();
 			bounds_ship();
 		}
+		
+		lastCharESC = 0;
 	}
 }
 
@@ -282,8 +301,8 @@ void buttons() {
 		if (lives <= 0) {
 			init_game();
 			buzzer_startup();
-			running = 1;
 		}
+		running = 1;
 	} else if (running) {
 		if (left) baseX -= 1;
 		if (right) baseX += 1;
@@ -331,14 +350,14 @@ int8_t lastLives = 10;
 void draw_score() {
 	if (lastScore != score) {
 		sseg_set(score);
-		serial_move(1, 1);
+		serial_move(1, 2);
 		printf("Score: %4d\n", score);
 		lastScore = score;
 	}
 	if (lastLives != lives) {
 		if (lives >= 0) config_set(CONFIG_GAME_LIVES, lives);
 		else config_set(CONFIG_GAME_LIVES, 0);
-		serial_move(1, 2);
+		serial_move(1, 3);
 		printf("Lives: %4d\n", lives);
 		lastLives = lives;
 		if (lives <= 0) {
@@ -367,7 +386,7 @@ void first_delay() {
 	if (firstDelayRun) return;
 	
 	firstDelayRun = 1;
-	running = 1;
+	running = 0;
 }
 
 int main (void)

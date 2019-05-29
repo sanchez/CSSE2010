@@ -72,6 +72,11 @@ void buzzer_collide() {
 	buzzer_add_tone(25, 100);
 }
 
+void buzzer_pause() {
+	PORTD |= (1 << 4) | (1 << 5);
+	OCR1A = 0;
+}
+
 uint16_t lastTone = 0;
 void task_buzzer() {
 	if (!config_get(CONFIG_BUZZER_ENABLE)) {

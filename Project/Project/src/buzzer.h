@@ -18,4 +18,5 @@ void buzzer_gameover(void);
 void buzzer_up(void);
 void buzzer_move(void);
 void buzzer_collide(void);
+void buzzer_pause(void);
 void task_buzzer(void);
