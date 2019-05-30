@@ -462,6 +462,7 @@ void buttons() {
 		if (lives <= 0) {
 			init_game();
 			buzzer_startup();
+			ledmatrix_stop_text();
 		}
 		running = 1;
 	} else if (running) {

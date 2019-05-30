@@ -15,12 +15,13 @@ void init_uart(unsigned long baudrate) {
 	stderr = &uartOutput;
 }
 
-void uart_putchar(char c, FILE *stream) {
+int uart_putchar(char c, FILE *stream) {
 	while ((UCSR0A & (1 << UDRE0)) == 0);
 	UDR0 = c;
 	if (c == '\n') {
 		uart_putchar('\r', NULL);
 	}
+	return 0;
 }
 
 int uart_getchar(FILE *stream) {

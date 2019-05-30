@@ -23,7 +23,7 @@
 #define WHITE_BACKGROUND 47
 
 void init_uart(unsigned long baudrate);
-void uart_putchar(char c, FILE *stream);
+int uart_putchar(char c, FILE *stream);
 int uart_getchar(FILE *stream);
 uint8_t uart_available(void);
 

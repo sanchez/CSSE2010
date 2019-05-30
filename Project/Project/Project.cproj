@@ -232,12 +232,6 @@
     <Compile Include="src\ledmatrix.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="src\queue.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\queue.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="src\serial.c">
       <SubType>compile</SubType>
     </Compile>
