@@ -553,7 +553,7 @@ void first_delay() {
 
 int main (void)
 {
-	init_uart(38400);
+	init_uart(19200);
 	serial_clear();
 	LOG("Loading");
 	init_ledmatrix();
